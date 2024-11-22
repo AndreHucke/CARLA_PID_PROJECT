@@ -8,3 +8,5 @@ To generate more waypoints than the examples, open CARLA and run the get_camera_
 In the simulation, you will be able to visualize the car and the planned route that he is going to follow.
 
 route_manager.py and pid_controller.py are supporting code for spawn_car.py. The first add the spawn point of the car to the route and display the route in CARLA. The second is the PID controller used multiple times.
+
+You can find the results in Plots and the code in Main.
