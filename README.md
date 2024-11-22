@@ -1,4 +1,4 @@
-# CARLA_PID_PROJECT
+# CARLA PID PROJECT
 Designed a PID controller for autonomous driving in CARLA
 
 To use the code, you need the waypoints and supporting code in the same folder as the spawn_car.py code. Have CARLA open when running the code.
