@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<waypoints>
+    <waypoint id="0" x="45.4" y="269.2" z="0.5"/>
+    <waypoint id="1" x="45.6" y="263.6" z="0.5"/>
+    <waypoint id="2" x="45.5" y="257.0" z="0.5"/>
+    <waypoint id="3" x="45.3" y="250.7" z="0.5"/>
+    <waypoint id="4" x="46.3" y="244.3" z="0.5"/>
+    <waypoint id="5" x="51.3" y="240.7" z="0.5"/>
+    <waypoint id="6" x="57.2" y="239.2" z="0.5"/>
+    <waypoint id="7" x="63.7" y="238.7" z="0.5"/>
+    <waypoint id="8" x="70.1" y="238.7" z="0.5"/>
+    <waypoint id="9" x="76.4" y="238.7" z="0.5"/>
+    <waypoint id="10" x="83.0" y="238.5" z="0.5"/>
+    <waypoint id="11" x="89.2" y="238.4" z="0.5"/>
+    <waypoint id="12" x="95.7" y="238.4" z="0.5"/>
+    <waypoint id="13" x="102.1" y="238.5" z="0.5"/>
+    <waypoint id="14" x="108.6" y="238.7" z="0.5"/>
+    <waypoint id="15" x="115.1" y="238.9" z="0.5"/>
+    <waypoint id="16" x="121.2" y="238.9" z="0.5"/>
+    <waypoint id="17" x="127.5" y="238.2" z="0.5"/>
+    <waypoint id="18" x="132.6" y="235.2" z="0.5"/>
+    <waypoint id="19" x="134.9" y="229.2" z="0.5"/>
+    <waypoint id="20" x="135.3" y="222.8" z="0.5"/>
+    <waypoint id="21" x="135.8" y="216.3" z="0.5"/>
+    <waypoint id="22" x="136.1" y="210.0" z="0.5"/>
+    <waypoint id="23" x="135.6" y="203.6" z="0.5"/>
+    <waypoint id="24" x="134.5" y="197.3" z="0.5"/>
+    <waypoint id="25" x="131.3" y="192.4" z="0.5"/>
+    <waypoint id="26" x="125.5" y="190.1" z="0.5"/>
+    <waypoint id="27" x="119.0" y="189.5" z="0.5"/>
+    <waypoint id="28" x="112.9" y="189.6" z="0.5"/>
+    <waypoint id="29" x="106.3" y="189.7" z="0.5"/>
+    <waypoint id="30" x="99.8" y="189.8" z="0.5"/>
+    <waypoint id="31" x="93.2" y="189.9" z="0.5"/>
+    <waypoint id="32" x="87.0" y="190.0" z="0.5"/>
+    <waypoint id="33" x="80.7" y="190.1" z="0.5"/>
+</waypoints>
