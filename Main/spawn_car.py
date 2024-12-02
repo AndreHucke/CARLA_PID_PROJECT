@@ -14,7 +14,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG = {
     'TOWN': 'Town02',
     'SPAWN_INDEX': 73,
-    'SPEED_KMH': 25,
+    'TEST_SPEEDS': [25, 50, 75, 100],  # List of speeds to test (km/h)
     'WAYPOINTS_BASE_PATH': SCRIPT_DIR,
     'SCENARIOS': [os.path.basename(f) for f in glob.glob(os.path.join(SCRIPT_DIR, '*.xml'))],
     'CONTROL_RATE': 0.1,
@@ -65,7 +65,7 @@ class SpawnCar:
         pid = CONFIG['PID']
         self.throttle_controller = PIDController(**pid['throttle'])
         self.steering_controller = PIDController(**pid['steering'])
-        self.target_speed = CONFIG['SPEED_KMH']
+        self.target_speed = CONFIG['TEST_SPEEDS'][0]
 
     def _setup_collision_sensor(self, blueprint_library):
         """Setup collision sensor"""
@@ -325,7 +325,7 @@ class SpawnCar:
 
     def analyze_speed_performance(self):
         """Analyze time spent within and outside speed threshold"""
-        target = CONFIG['SPEED_KMH']
+        target = CONFIG['TEST_SPEEDS'][0]
         threshold = CONFIG['SPEED_THRESHOLD'] + 0.5  # Modified threshold for analysis
         total_time = self.time_history[-1] - self.time_history[0]
         
@@ -431,10 +431,163 @@ class SpawnCar:
         for actor in self.actor_list:
             actor.destroy()
 
-def run_scenario(client, world, route_file):
-    """Run a single scenario with given route file"""
+def create_combined_plots(scenario_data, route_file):
+    """Create combined plots for all speeds of a given route"""
+    colors = plt.cm.rainbow(np.linspace(0, 1, len(scenario_data)))
+    
+    # Speed performance plot
+    plt.figure(figsize=(12, 8))
+    for (speed, data), color in zip(scenario_data.items(), colors):
+        if data and len(data['time']) > 0:
+            style = '-' if data.get('completed', False) else ':'  # Solid line for success, dotted for failure
+            plt.plot(data['time'], data['speed'], 
+                    style, 
+                    color=color,
+                    linewidth=2 if data.get('completed', False) else 1.5,
+                    label=f'{speed} km/h {"(completed)" if data.get("completed", False) else "(failed)"}')
+    
+    plt.title(f'Vehicle Speed Over Time - {os.path.splitext(route_file)[0]}')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Speed (km/h)')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], 
+                            f"combined_speed_performance_{os.path.splitext(route_file)[0]}.png"))
+    plt.close()
+
+    # Lateral error plot
+    plt.figure(figsize=(12, 8))
+    for (speed, data), color in zip(scenario_data.items(), colors):
+        if data and len(data['time']) > 0 and len(data['lateral_error']) > 0:
+            style = '-' if data.get('completed', False) else ':'
+            plt.plot(data['time'][:len(data['lateral_error'])], 
+                    data['lateral_error'], 
+                    style,
+                    color=color,
+                    linewidth=2 if data.get('completed', False) else 1.5,
+                    label=f'{speed} km/h {"(completed)" if data.get("completed", False) else "(failed)"}')
+    
+    plt.title(f'Lateral Error Over Time - {os.path.splitext(route_file)[0]}')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Lateral Error (m)')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], 
+                            f"combined_lateral_error_{os.path.splitext(route_file)[0]}.png"))
+    plt.close()
+
+def create_speed_plot(time_history, speed_history, target_speed, completed, route_file, speed):
+    """Create individual speed plot for a given speed"""
+    threshold = CONFIG['SPEED_THRESHOLD'] + 0.5  # Modified threshold for analysis
+    total_time = time_history[-1] - time_history[0]
+    
+    # Count time within threshold
+    time_in_range = sum(
+        t2 - t1 
+        for s1, s2, t1, t2 in zip(
+            speed_history[:-1], 
+            speed_history[1:],
+            time_history[:-1],
+            time_history[1:]
+        )
+        if abs(s1 - target_speed) <= threshold
+    )
+    
+    time_outside = total_time - time_in_range
+    
+    # Create performance plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(time_history, speed_history, 'b-', label='Actual Speed')
+    plt.axhline(y=target_speed, color='g', linestyle='--', label='Target Speed')
+    plt.axhline(y=target_speed + threshold, color='r', linestyle=':', label='Threshold')
+    plt.axhline(y=target_speed - threshold, color='r', linestyle=':')
+    plt.fill_between(time_history, 
+                    [target_speed - threshold] * len(time_history),
+                    [target_speed + threshold] * len(time_history),
+                    alpha=0.2, color='g')
+    
+    plt.title(f'Vehicle Speed Over Time - {os.path.splitext(route_file)[0]} at {speed} km/h')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Speed (km/h)')
+    plt.legend()
+    plt.grid(True)
+    
+    # Add performance text
+    performance_text = (
+        f'Time in range: {time_in_range:.1f}s ({(time_in_range/total_time)*100:.1f}%)\n'
+        f'Time outside: {time_outside:.1f}s ({(time_outside/total_time)*100:.1f}%)'
+    )
+    plt.text(0.02, 0.98, performance_text,
+            transform=plt.gca().transAxes,
+            verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
+    plt.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], 
+                            f"speed_performance_{os.path.splitext(route_file)[0]}_{speed}kmh.png"))
+    plt.close()
+
+def create_lateral_error_plot(time_history, lateral_error_history, route_file, speed):
+    """Create individual lateral error plot for a given speed"""
+    if not lateral_error_history or not time_history:
+        return None
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(time_history[:len(lateral_error_history)], 
+            lateral_error_history, 'b-', label='Lateral Error')
+    plt.axhline(y=0, color='g', linestyle='--', label='Center Line')
+    
+    max_error = max(abs(min(lateral_error_history)), 
+                   abs(max(lateral_error_history)))
+    threshold = 1.0  # 1 meter threshold
+    plt.axhline(y=threshold, color='r', linestyle=':', label='Threshold')
+    plt.axhline(y=-threshold, color='r', linestyle=':')
+    
+    plt.fill_between(time_history[:len(lateral_error_history)], 
+                    [-threshold] * len(lateral_error_history),
+                    [threshold] * len(lateral_error_history),
+                    alpha=0.2, color='g')
+    
+    plt.title(f'Lateral Error Over Time - {os.path.splitext(route_file)[0]} at {speed} km/h')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Lateral Error (m)')
+    plt.legend()
+    plt.grid(True)
+    
+    # Calculate statistics
+    time_in_range = sum(
+        t2 - t1 
+        for e1, e2, t1, t2 in zip(
+            lateral_error_history[:-1],
+            lateral_error_history[1:],
+            time_history[:-1],
+            time_history[1:]
+        )
+        if abs(e1) <= threshold
+    )
+    
+    total_time = time_history[-1] - time_history[0]
+    time_outside = total_time - time_in_range
+    
+    performance_text = (
+        f'Time in range: {time_in_range:.1f}s ({(time_in_range/total_time)*100:.1f}%)\n'
+        f'Time outside: {time_outside:.1f}s ({(time_outside/total_time)*100:.1f}%)\n'
+        f'Max error: {max_error:.2f}m'
+    )
+    
+    plt.text(0.02, 0.98, performance_text,
+            transform=plt.gca().transAxes,
+            verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
+    plt.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], 
+                            f"lateral_error_{os.path.splitext(route_file)[0]}_{speed}kmh.png"))
+    plt.close()
+
+def run_scenario(client, world, route_file, target_speed):
+    """Run a single scenario with given route file and target speed"""
     actor_list = []
     route_manager = None
+    completed = False
     
     try:
         # Get spawn point
@@ -456,37 +609,31 @@ def run_scenario(client, world, route_file):
 
         # Spawn vehicle
         car = SpawnCar(world, world.get_blueprint_library(), start_point, route_manager)
+        car.target_speed = target_speed  # Set the target speed
         actor_list.append(car)
 
         # Control loop
         running = True
         while running:
             running = car.update_control(CONFIG['CONTROL_RATE'])
+            if not running and not car.collision_detected:
+                # If we stopped without a collision, it means we completed the route
+                completed = True
             if not running:
                 break
             time.sleep(CONFIG['SLEEP_TIME'])
 
-        # After completion, analyze and save performance plots
-        if not car.collision_detected:
-            # Speed performance
-            plt.figure(figsize=(10, 6))
-            performance_plot = car.analyze_speed_performance()
-            plot_filename = f"speed_performance_{os.path.splitext(route_file)[0]}.png"
-            performance_plot.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], plot_filename))
-            plt.close()
-            
-            # Lateral error performance
-            lateral_plot = car.analyze_lateral_error()
-            if lateral_plot:
-                plot_filename = f"lateral_error_{os.path.splitext(route_file)[0]}.png"
-                lateral_plot.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], plot_filename))
-                plt.close()
-
-        return True
+        # After completion or failure, return whatever data we have
+        return {
+            'time': car.time_history,
+            'speed': car.speed_history,
+            'lateral_error': car.lateral_error_history,
+            'completed': completed and not car.collision_detected  # Only complete if no collision
+        }
 
     except Exception as e:
         print(f"\nError in scenario {route_file}: {e}")
-        return False
+        return None
     finally:
         print('\nCleaning up scenario...')
         for actor in actor_list:
@@ -499,25 +646,40 @@ def main():
         client = carla.Client('localhost', 2000)
         client.set_timeout(10.0)
         
-        # Run each scenario
+        # Run each scenario with each speed
         for scenario_file in CONFIG['SCENARIOS']:
-            print(f"\n\nStarting scenario with route: {scenario_file}")
-            print("----------------------------------------")
+            scenario_data = {}  # Collect data for all speeds of this scenario
             
-            # Reload the world to start fresh
-            world = client.load_world(CONFIG['TOWN'])
-            world.tick()
-            time.sleep(1.0)  # Wait for world to stabilize
+            for speed in CONFIG['TEST_SPEEDS']:
+                print(f"\n\nStarting scenario with route: {scenario_file} at {speed} km/h")
+                print("----------------------------------------")
+                
+                # Reload the world to start fresh
+                world = client.load_world(CONFIG['TOWN'])
+                world.tick()
+                time.sleep(1.0)  # Wait for world to stabilize
+                
+                # Run the scenario and collect data
+                result = run_scenario(client, world, scenario_file, speed)
+                
+                if result:  # Store data even if the run wasn't completed successfully
+                    scenario_data[speed] = result
+                    status = "completed successfully" if result.get('completed', False) else "failed"
+                    print(f"Scenario {scenario_file} at {speed} km/h {status}")
+                    
+                    # Create individual speed plot
+                    create_speed_plot(result['time'], result['speed'], speed, result.get('completed', False), scenario_file, speed)
+                    
+                    # Create individual lateral error plot
+                    create_lateral_error_plot(result['time'], result['lateral_error'], scenario_file, speed)
+                else:
+                    print(f"Scenario {scenario_file} at {speed} km/h failed to start")
+                
+                time.sleep(1.0)  # Pause between scenarios
             
-            # Run the scenario
-            success = run_scenario(client, world, scenario_file)
-            
-            if success:
-                print(f"Scenario {scenario_file} completed successfully")
-            else:
-                print(f"Scenario {scenario_file} failed")
-            
-            time.sleep(1.0)  # Pause between scenarios
+            # Create combined plots for this scenario
+            if scenario_data:
+                create_combined_plots(scenario_data, scenario_file)
 
     except KeyboardInterrupt:
         print("\nStopping simulation (Ctrl+C pressed)")
