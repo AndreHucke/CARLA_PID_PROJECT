@@ -6,7 +6,7 @@ import os
 import math
 
 # Configuration constants
-SAVE_DIR = "/home/teixeia/projects/homeworks/CPS/CARLA/Main"
+SAVE_DIR = "CARLA_PID_PROJECT/Main"
 FIXED_Z = 0.5
 MIN_DISTANCE = 5.0
 COLLECTION_INTERVAL = 0.1
