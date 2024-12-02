@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 import os
 import math
+import glob
 
 # Configuration constants
 SAVE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -59,13 +60,30 @@ class WaypointCollector:
             'raw_count': len(self.raw_waypoints)
         }
 
-    def save_to_xml(self, filename="waypoints.xml"):
+    def save_to_xml(self):
         processed = self.process_waypoints()
         if not processed:
             print("\nNo waypoints to save!")
             return
 
-        filepath = os.path.join(self.save_directory, filename)
+        # Find the next available filename
+        base_filename = "waypoints"
+        extension = ".xml"
+        existing_files = glob.glob(os.path.join(self.save_directory, base_filename + "*" + extension))
+        max_num = 0
+        for filename in existing_files:
+            basename = os.path.basename(filename)
+            num_str = basename.replace(base_filename, "").replace(extension, "")
+            if num_str.isdigit():
+                num = int(num_str)
+                if num > max_num:
+                    max_num = num
+        next_num = max_num + 1
+        if (next_num == 1):
+            filepath = os.path.join(self.save_directory, base_filename + extension)
+        else:
+            filepath = os.path.join(self.save_directory, f"{base_filename}{next_num}{extension}")
+
         root = ET.Element("waypoints")
         
         for i, (x, y, z) in enumerate(processed):
