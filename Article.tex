@@ -32,7 +32,7 @@ The pursuit of fully autonomous vehicles has accelerated in recent years, driven
 
 PID (Proportional-Integral-Derivative) controllers play a crucial role in the control systems of autonomous vehicles, particularly in managing steering and speed control. These controllers are favored for their simplicity and effectiveness in maintaining desired vehicle trajectories and velocities \cite{10.1108/ir-12-2019-0254}. Before real-world implementation, a safe simulated environment is preferred. CARLA has emerged as an excellent platform for autonomous driving simulation, allowing researchers to implement custom solutions using Python. It supports the development of autonomous vehicles by providing a realistic urban environment where various driving scenarios can be simulated.
 
-This research aims to enable a vehicle to accurately follow a predefined route and maintain desired speed while ensuring stability and minimizing collision risks, thereby enhancing knowledge in cyber-physical systems and PID control. The core components of this project include:
+This research aims to enable a vehicle to accurately follow a predefined route and maintain the desired speed while ensuring stability and minimizing collision risks, thereby enhancing knowledge in cyber-physical systems and PID control. The core components of this project include:
 
 \begin{itemize}
     \item \textbf{Waypoint Planning:}
@@ -102,7 +102,7 @@ Town02 was selected as the environment due to its simpler layout, ideal for test
 The system involves controlling the position and speed of a vehicle to follow a predefined route using a PID controller. The vehicle state is updated through a feedback mechanism that utilizes velocity and positional information. The control objectives include minimizing both longitudinal (speed) and lateral (steering) errors.
 
 \subsection{Route Management and Waypoint Planning}
-The route is defined through a series of waypoints ($w_i$) extracted from an XML file or generated through the camera-based waypoint tracing. The waypoints are represented as 3D positions in the form:
+The route is defined through a series of waypoints ($w_i$) extracted from an XML file or generated through camera-based waypoint tracing. The waypoints are represented as 3D positions in the form:
 
 \begin{equation}
 w_i = (x_i, y_i, z_i)
@@ -158,7 +158,7 @@ u(t) = p(t) + i(t) + d(t)
 These control actions are used in:
 
 \subsubsection{Throttle Control}
-The target speed $v_{\text{target}}$ is compared with the current speed $v_{\text{current}}$ to calculate the speed error ($e_v = v_{\text{target}} - v_{\text{current}}$). The PID control action for throttle is computed as:
+The target speed $v_{\text{target}}$ is compared with the current speed $v_{\text{current}}$ to calculate the speed error ($e_v = v_{\text{target}} - v_{\text{current}}$). The PID control action for the throttle is computed as:
 
 The throttle ($T$) and brake ($B$) values are determined by the speed error. If the speed error is positive, the throttle value is increased; otherwise, braking is applied:
 
@@ -321,7 +321,7 @@ The velocity over time calculation involves analyzing the speed of the vehicle t
 
 \section{Experimental Plan}
 
-Ten user-defined routes were created using CARLA's camera as a route planner, and all routes were successfully completed. An example of a simulation with the route can be seen in Figure~\ref{fig:route}
+Ten user-defined routes were created using CARLA's camera as a route planner with varying complexities (eg. varying numbers of turns), and all routes were successfully completed. An example of a simulation with the route can be seen in Figure~\ref{fig:route}
 
 \begin{figure}[h]
     \centering
@@ -330,7 +330,7 @@ Ten user-defined routes were created using CARLA's camera as a route planner, an
     \label{fig:route}
 \end{figure}
 
-For route tracking, a lookahead of three waypoints was set after trial and error. Using a single waypoint resulted in collisions in some scenarios, while analyzing the entire path at every time point without lookahead also led to collisions.
+For route tracking, a lookahead of three waypoints was set after trial and error. Using a single waypoint resulted in collisions in some scenarios while analyzing the entire path at every time point without a lookahead also led to collisions. Although an unwanted state happened in these scenarios they were useful to prove Hypothesis 3, where the simulation ended and the next started as soon as the collision happened.
 
 Due to how the lateral error was calculated, the error increases when the vehicle navigates a turn, as shown by the spikes in Figure~\ref{fig:lateral_error}. When focusing on how well the car maintained a bearing that followed the route in straight lines, it is evident that the vehicle tracks the route well without much wobble. Performance in sharp 90-degree turns indicated the need for more advanced controllers or adaptive PID tuning strategies.
 
@@ -341,7 +341,7 @@ Due to how the lateral error was calculated, the error increases when the vehicl
     \label{fig:lateral_error}
 \end{figure}
 
-Regarding speed maintenance, the PID controller was appropriately fine-tuned. Most of the time the vehicle stayed outside the target speed was during the initial acceleration period when the simulation started, and the car was smoothly accelerating to reach the target speed.
+Regarding speed maintenance, the PID controller was appropriately fine-tuned. Most of the time, the vehicle stayed outside the target speed during the initial acceleration period when the simulation started, and the car smoothly accelerated to reach the target speed.
 
 \begin{figure}[h]
     \centering
@@ -354,17 +354,17 @@ Overall, the project was successful considering the defined hypotheses. The obse
 
 \section{Conclusion}
 
-This project successfully demonstrated the implementation of a PID controller in the CARLA simulator for autonomous vehicle control. By fine-tuning the PID parameters, the vehicle accurately followed predefined routes and maintained the target speed, validating the defined hypotheses. The lateral error analysis showed effective path tracking, especially in straight-line segments, while performance during sharp 90-degree turns indicated areas for improvement.
+This project successfully demonstrated the implementation of a PID controller for autonomous vehicle control within the CARLA simulator. By fine-tuning the PID parameters, the vehicle accurately followed predefined routes and maintained the target speed, thereby validating the defined hypotheses. The lateral error analysis indicated effective path tracking, particularly in straight-line segments; however, performance during sharp 90-degree turns highlighted areas for potential improvement.
 
-Although CARLA offers advanced route planning capabilities using automatic pathfinding, this work intentionally utilized more rudimentary methods. This approach allowed for a deeper understanding of the simulator and explored how CARLA's camera features can be leveraged in future research.
+Although CARLA provides advanced route planning capabilities with automatic pathfinding, this project intentionally employed more rudimentary methods. This approach facilitated a deeper understanding of the simulator and enabled exploration of how CARLA's camera features can be leveraged in future research.
 
-Future work could involve exploring more advanced control strategies or adaptive PID tuning to enhance performance in complex driving scenarios. Additionally, varying the vehicle's speed, experimenting with different simulation environments, and integrating computer vision techniques could lead to a fully autonomous vehicle without the need for manual route planning.
+Future work may involve investigating advanced control strategies or adaptive PID tuning to improve performance in complex driving scenarios. Moreover, varying the vehicle's speed, incorporating turns of various angles, experimenting with different simulation environments, and integrating computer vision techniques could facilitate the development of a fully autonomous vehicle without the need for manual route planning.
 
 \section{Acknowledgements}
 
 All code and additional results for other scenarios are available at \url{https://github.com/AndreHucke/CARLA_PID_PROJECT}.
 
-ChatGPT and GitHub Copilot were used in the development and polishing of the code and text.
+ChatGPT and GitHub Copilot were used to develop and polish the code and text.
 
 \bibliographystyle{IEEEtran}
 \bibliography{References}
