@@ -16,6 +16,7 @@ CONFIG = {
     'SPAWN_INDEX': 73,
     'TEST_SPEEDS': [25, 50, 75, 100],  # List of speeds to test (km/h)
     'WAYPOINTS_BASE_PATH': SCRIPT_DIR,
+    'PLOTS_BASE_PATH': os.path.join(SCRIPT_DIR, 'Plots'),
     'SCENARIOS': [os.path.basename(f) for f in glob.glob(os.path.join(SCRIPT_DIR, '*.xml'))],
     'CONTROL_RATE': 0.1,
     'SLEEP_TIME': 0.01,
@@ -451,7 +452,7 @@ def create_combined_plots(scenario_data, route_file):
     plt.ylabel('Speed (km/h)')
     plt.legend()
     plt.grid(True)
-    plt.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], 
+    plt.savefig(os.path.join(CONFIG['PLOTS_BASE_PATH'], 
                             f"combined_speed_performance_{os.path.splitext(route_file)[0]}.png"))
     plt.close()
 
@@ -472,7 +473,7 @@ def create_combined_plots(scenario_data, route_file):
     plt.ylabel('Lateral Error (m)')
     plt.legend()
     plt.grid(True)
-    plt.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], 
+    plt.savefig(os.path.join(CONFIG['PLOTS_BASE_PATH'], 
                             f"combined_lateral_error_{os.path.splitext(route_file)[0]}.png"))
     plt.close()
 
@@ -522,7 +523,7 @@ def create_speed_plot(time_history, speed_history, target_speed, completed, rout
             verticalalignment='top',
             bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     
-    plt.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], 
+    plt.savefig(os.path.join(CONFIG['PLOTS_BASE_PATH'], 
                             f"speed_performance_{os.path.splitext(route_file)[0]}_{speed}kmh.png"))
     plt.close()
 
@@ -579,7 +580,7 @@ def create_lateral_error_plot(time_history, lateral_error_history, route_file, s
             verticalalignment='top',
             bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     
-    plt.savefig(os.path.join(CONFIG['WAYPOINTS_BASE_PATH'], 
+    plt.savefig(os.path.join(CONFIG['PLOTS_BASE_PATH'], 
                             f"lateral_error_{os.path.splitext(route_file)[0]}_{speed}kmh.png"))
     plt.close()
 
