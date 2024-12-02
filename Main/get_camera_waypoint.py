@@ -11,6 +11,7 @@ FIXED_Z = 0.5
 MIN_DISTANCE = 5.0
 COLLECTION_INTERVAL = 0.1
 DECIMAL_PRECISION = 1
+SPAWN_INDEX = 73  # Match spawn index from spawn_car.py
 
 class WaypointCollector:
     def __init__(self):
@@ -90,7 +91,21 @@ def main():
     try:
         client = carla.Client('localhost', 2000)
         client.set_timeout(10.0)
-        world = client.get_world()
+        
+        # Load Town02
+        world = client.load_world('Town02')
+        world.tick()
+        time.sleep(1.0)  # Wait for world to stabilize
+        
+        # Get the same spawn point as spawn_car.py
+        spawn_points = world.get_map().get_spawn_points()
+        spawn_index = min(SPAWN_INDEX, len(spawn_points) - 1)
+        start_point = spawn_points[spawn_index]
+        
+        # Set spectator to start point
+        spectator = world.get_spectator()
+        spectator.set_transform(start_point)
+        
         collector = WaypointCollector()
         
         print("Recording camera positions...")
