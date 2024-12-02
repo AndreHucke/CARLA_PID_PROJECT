@@ -174,6 +174,15 @@ B = \max(0, -K_p \cdot e_v - K_i \cdot \int_{0}^{t} e_v d\tau - K_d \cdot \frac{
 u_{\text{throttle}} = K_p e_v + K_i \int_{0}^{t} e_v(\tau) d\tau + K_d \frac{de_v(t)}{dt}
 \end{equation}
 
+% Add the initialization parameters
+The PID controller for throttle response was initialized with the following parameters:
+
+\begin{equation}
+K_p = 1.0,\quad K_i = 0.1,\quad K_d = 0.0
+\end{equation}
+
+These parameters were chosen to provide a strong proportional response for immediate error correction and a small integral action to eliminate steady-state errors. The derivative term was set to zero to avoid amplifying measurement noise and because the system's dynamics did not require derivative control.
+
 \subsubsection{Steering Control}
 
 The steering control aims to minimize the lateral displacement from the path. The error is represented by the angle difference between the direction vector to the target waypoint and the vehicle's current heading. The steering error ($e_s$) is defined as:
@@ -193,6 +202,14 @@ The steering value ($\delta$) is determined by the steering error and clamped wi
 \begin{equation}
 \delta = \text{clip}\left( K_p \cdot e_s + K_i \cdot \int_{0}^{t} e_s d\tau + K_d \cdot \frac{de_s(t)}{dt}, -1, 1 \right)
 \end{equation}
+
+The PID controller for steering response was initialized with the following parameters:
+
+\begin{equation}
+K_p = 0.5,\quad K_i = 0.0,\quad K_d = 0.1
+\end{equation}
+
+These parameters were chosen to provide a balanced response for steering control. The proportional gain ($K_p$) was set to 0.5 to ensure a moderate response to steering errors without causing excessive oscillations. The integral gain ($K_i$) was set to 0.0 to avoid accumulation of past errors, which is not critical for steering control in this context. The derivative gain ($K_d$) was set to 0.1 to provide damping and reduce overshoot, helping to smooth out the steering response.
 
 \subsection{Collision Detection and Performance Analysis}
 \subsubsection{Collision Detection}
