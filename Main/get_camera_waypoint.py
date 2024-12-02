@@ -12,6 +12,7 @@ MIN_DISTANCE = 5.0
 COLLECTION_INTERVAL = 0.1
 DECIMAL_PRECISION = 1
 SPAWN_INDEX = 73  # Match spawn index from spawn_car.py
+TOWN_INDEX = 'Town02'
 
 class WaypointCollector:
     def __init__(self):
@@ -93,7 +94,7 @@ def main():
         client.set_timeout(10.0)
         
         # Load Town02
-        world = client.load_world('Town02')
+        world = client.load_world(TOWN_INDEX)
         world.tick()
         time.sleep(1.0)  # Wait for world to stabilize
         
