@@ -12,7 +12,7 @@ CONFIG = {
     'TOWN': 'Town02',
     'SPAWN_INDEX': 73,
     'SPEED_KMH': 25,
-    'WAYPOINTS_BASE_PATH': "/home/teixeia/projects/homeworks/CPS/CARLA/Main",
+    'WAYPOINTS_BASE_PATH': "CARLA_PID_PROJECT/Main",
     'SCENARIOS': ['waypoints0.xml', 'waypoints1.xml',
                   'waypoints2.xml', 'waypoints3.xml',
                   'waypoints4.xml', 'waypoints5.xml',
