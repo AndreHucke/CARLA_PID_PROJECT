@@ -6,18 +6,17 @@ from pid_controller import PIDController
 from route_manager import RouteManager
 import os
 import matplotlib.pyplot as plt
+import glob
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Configuration
 CONFIG = {
     'TOWN': 'Town02',
     'SPAWN_INDEX': 73,
     'SPEED_KMH': 25,
-    'WAYPOINTS_BASE_PATH': "CARLA_PID_PROJECT/Main",
-    'SCENARIOS': ['waypoints0.xml', 'waypoints1.xml',
-                  'waypoints2.xml', 'waypoints3.xml',
-                  'waypoints4.xml', 'waypoints5.xml',
-                  'waypoints6.xml', 'waypoints7.xml',
-                  'waypoints8.xml', 'waypoints9.xml'],
+    'WAYPOINTS_BASE_PATH': SCRIPT_DIR,
+    'SCENARIOS': [os.path.basename(f) for f in glob.glob(os.path.join(SCRIPT_DIR, '*.xml'))],
     'CONTROL_RATE': 0.1,
     'SLEEP_TIME': 0.01,
     'PID': {
