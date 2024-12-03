@@ -336,24 +336,24 @@ The velocity over time calculation involves analyzing the speed of the vehicle t
 
 \end{enumerate}
 
-\section{Experimental Plan}
+\section{Experimental Design}
 
-Ten user-defined routes were created using CARLA's camera as a route planner with varying complexities (eg. varying numbers of turns), and all routes were successfully completed. An example of a simulation with the route can be seen in Figure~\ref{fig:route}
+We created ten user-defined routes using CARLA's camera as a route planner, each with varying complexities, such as different numbers of turns. These routes were tested at four different velocities: 25 km/h, 50 km/h, 75 km/h, and 100 km/h. Figure~\ref{fig:route} shows an example of a simulation with the route plotted for visualization. The vehicle's performance was evaluated based on the completion status of each route, the lateral error, and the speed performance. The completion status was determined by whether the vehicle reached the end waypoint without colliding with any obstacles.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\columnwidth]{Plots/Route.png}
-    \caption{Bird's eye view a simulation with the route plotted for the user to visualize where the car is going.}
+    \caption{Bird's eye view of a simulation with the route plotted for the user to visualize where the car is going.}
     \label{fig:route}
 \end{figure}
 
-For route tracking, a lookahead of three waypoints was set after trial and error. Using a single waypoint resulted in collisions in some scenarios while analyzing the entire path at every time point without a lookahead also led to collisions. Although an unwanted state happened in these scenarios they were useful to prove Hypothesis 3, where the simulation ended and the next started as soon as the collision happened.
+For route tracking, a lookahead of three waypoints was determined to be optimal after trial and error. Using a single waypoint resulted in collisions in some scenarios, while analyzing the entire path at every time point without a lookahead also led to collisions. These unwanted states were useful in disproving Hypothesis 3, where the simulation ended and the next started as soon as a collision occurred.
 
-Due to how the lateral error was calculated, the error increases when the vehicle navigates a turn, as shown by the spikes in Figure~\ref{fig:lateral_error}. When focusing on how well the car maintained a bearing that followed the route in straight lines, it is evident that the vehicle tracks the route well without much wobble. Performance in sharp 90-degree turns indicated the need for more advanced controllers or adaptive PID tuning strategies.
+The lateral error increases when the vehicle navigates a turn, as shown by the spikes in Figure~\ref{fig:lateral_error}. In straight-line segments, the vehicle tracks the route well without much wobble. Performance in sharp 90-degree turns indicated the need for more advanced controllers or adaptive PID tuning strategies.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\columnwidth]{Plots/lateral_error_waypoints0.png}
+    \includegraphics[width=\columnwidth]{Plots/lateral_error_waypoints0_25kmh.png}
     \caption{Lateral error analysis showing the vehicle's deviation from the intended path over time. The graph demonstrates the effectiveness of the PID controller in maintaining the vehicle close to the desired trajectory.}
     \label{fig:lateral_error}
 \end{figure}
@@ -362,9 +362,60 @@ Regarding speed maintenance, the PID controller was appropriately fine-tuned. Mo
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\columnwidth]{Plots/speed_performance_waypoints0.png}
+    \includegraphics[width=\columnwidth]{Plots/speed_performance_waypoints0_25kmh.png}
     \caption{Speed performance analysis showing the vehicle's actual speed compared to the target speed. The plot illustrates the PID controller's ability to maintain consistent speed while following the designated route.}
     \label{fig:speed_performance}
+\end{figure}
+
+For a more comprehensive evaluation, different speed where set for all scenarios. Table~\ref{tab:completion_status} summarizes the completion status of each route at different velocities.
+
+\begin{table}[H]
+    \centering
+    \caption{Route Completion Status at Different Velocities}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Route} & \textbf{25 km/h} & \textbf{50 km/h} & \textbf{75 km/h} & \textbf{100 km/h} \\
+        \hline
+        Route 1 & Completed & Completed & Completed & Failed \\
+        \hline
+        Route 2 & Completed & Completed & Completed & Failed \\
+        \hline
+        Route 3 & Completed & Completed & Failed & Failed \\
+        \hline
+        Route 4 & Completed & Failed & Failed & Failed \\
+        \hline
+        Route 5 & Completed & Completed & Failed & Failed \\
+        \hline
+        Route 6 & Completed & Completed & Failed & Failed \\
+        \hline
+        Route 7 & Completed & Completed & Failed & Failed \\
+        \hline
+        Route 8 & Completed & Completed & Failed & Failed \\
+        \hline
+        Route 9 & Completed & Completed & Failed & Failed \\
+        \hline
+        Route 10 & Completed & Completed & Failed & Failed \\
+        \hline
+    \end{tabular}
+    \label{tab:completion_status}
+\end{table}
+
+The routes and completion rates reveals that the vehicle successfully completed all routes at lower speeds. However, as speed increased, the vehicle struggled with sharp turns, leading to collisions after long stretches of straight road, having issues even reaching such high speeds when the target was set to 100 km/h, an unimaginable scenario even for human drive. The PID controller proved effective up to 50 km/h, with the only failed route due to human error in waypoint placement where the PID controller does have enough space to recover from the turn. Figure~\ref{fig:lamp_post} shows the problematic waypoint. Despite this, the vehicle should handle non-perfect routes with more advanced controllers.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\columnwidth]{Plots/lamp_post.png}
+    \caption{Problematic waypoint that caused the vehicle to crash in Route 4 at 50 km/h.}
+    \label{fig:lamp_post}
+\end{figure}
+
+Another point to consider is the time spent in each route when the speed differs. Similar to Figure~\ref{fig:speed_performance}, Figure~\ref{fig:combined} shows the time spent within the speed threshold for each route reduces dramatically from 25 km/h to 50 km/h, with incremental gains on complete routes for speeds above 50 km/h. This further emphasizes that this PID controller is suitable for speeds up to 50 km/h.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\columnwidth]{Plots/combined_speed_performance_waypoints0.png}
+    \caption{Combined analysis of speed performance for all routes at different speeds. The graph illustrates the time spent within the speed threshold for each route at varying velocities as well as completion rate and speed accuracy.}
+    \label{fig:combined}
 \end{figure}
 
 Overall, the project was successful considering the defined hypotheses. The observed effect with sharp 90-degree turns was expected according to previous research \cite{10.25165/j.ijabe.20241701.7296}, but the vehicle was still able to complete all routes within the road boundaries without crashing.
@@ -373,9 +424,11 @@ Overall, the project was successful considering the defined hypotheses. The obse
 
 This project successfully demonstrated the implementation of a PID controller for autonomous vehicle control within the CARLA simulator. By fine-tuning the PID parameters, the vehicle accurately followed predefined routes and maintained the target speed, thereby validating the defined hypotheses. The lateral error analysis indicated effective path tracking, particularly in straight-line segments; however, performance during sharp 90-degree turns highlighted areas for potential improvement.
 
-Although CARLA provides advanced route planning capabilities with automatic pathfinding, this project intentionally employed more rudimentary methods. This approach facilitated a deeper understanding of the simulator and enabled exploration of how CARLA's camera features can be leveraged in future research.
+The experimental results showed that the vehicle could complete all routes at lower speeds (up to 50 km/h) with high accuracy. However, as the speed increased, the vehicle struggled with sharp turns, leading to collisions. The PID controller proved effective up to 50 km/h, with the only failed route due to human error in waypoint placement. This indicates that while the PID controller is suitable for moderate speeds, more advanced control strategies may be required for higher speeds and complex scenarios.
 
-Future work may involve investigating advanced control strategies or adaptive PID tuning to improve performance in complex driving scenarios. Moreover, varying the vehicle's speed, incorporating turns of various angles, experimenting with different simulation environments, and integrating computer vision techniques could facilitate the development of a fully autonomous vehicle without the need for manual route planning.
+The project also highlighted the importance of proper waypoint placement and the need for adaptive control strategies to handle non-perfect routes. The time spent within the speed threshold for each route reduced dramatically from 25 km/h to 50 km/h, emphasizing the PID controller's suitability for speeds up to 50 km/h.
+
+Future work may involve investigating advanced control strategies or adaptive PID tuning to improve performance in complex driving scenarios. Moreover, better lookahead function, incorporating turns of various angles, experimenting with different simulation environments, and integrating computer vision techniques could facilitate the development of a fully autonomous vehicle without the need for manual route planning.
 
 \section{Acknowledgements}
 
