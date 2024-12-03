@@ -34,6 +34,10 @@ CONFIG = {
     },
 }
 
+# Ensure the 'Plots' directory exists
+if not os.path.exists(CONFIG['PLOTS_BASE_PATH']):
+    os.makedirs(CONFIG['PLOTS_BASE_PATH'])
+
 class SpawnCar:
     def __init__(self, world, blueprint_library, spawn_point, route_manager):
         self.world = world
