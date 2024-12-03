@@ -367,7 +367,7 @@ Regarding speed maintenance, the PID controller was appropriately fine-tuned. Mo
     \label{fig:speed_performance}
 \end{figure}
 
-For a more comprehensive evaluation, different speed where set for all scenarios. Table~\ref{tab:completion_status} summarizes the completion status of each route at different velocities.
+For a more comprehensive evaluation, different speeds were set for all scenarios. Table~\ref{tab:completion_status} summarizes the completion status of each route at different velocities.
 
 \begin{table}[H]
     \centering
@@ -378,7 +378,7 @@ For a more comprehensive evaluation, different speed where set for all scenarios
         \hline
         Route 1 & Completed & Completed & Completed & Failed \\
         \hline
-        Route 2 & Completed & Completed & Completed & Failed \\
+        Route 2 & Completed & Completed & Failed & Failed \\
         \hline
         Route 3 & Completed & Completed & Failed & Failed \\
         \hline
@@ -400,7 +400,7 @@ For a more comprehensive evaluation, different speed where set for all scenarios
     \label{tab:completion_status}
 \end{table}
 
-The routes and completion rates reveals that the vehicle successfully completed all routes at lower speeds. However, as speed increased, the vehicle struggled with sharp turns, leading to collisions after long stretches of straight road, having issues even reaching such high speeds when the target was set to 100 km/h, an unimaginable scenario even for human drive. The PID controller proved effective up to 50 km/h, with the only failed route due to human error in waypoint placement where the PID controller does have enough space to recover from the turn. Figure~\ref{fig:lamp_post} shows the problematic waypoint. Despite this, the vehicle should handle non-perfect routes with more advanced controllers.
+The routes and completion rates reveal that the vehicle successfully completed all routes at lower speeds. However, as speed increased, the vehicle struggled with sharp turns, leading to collisions after long stretches of straight road, having issues even reaching such high speeds when the target was set to 75 km/h or 100 km/h, an unimaginable scenario even for human drivers with sharp turns. The PID controller proved effective up to 50 km/h, with the only failed route due to human error in waypoint placement where the PID controller does not have enough space to recover from the turn. Figure~\ref{fig:lamp_post} shows the problematic waypoint. Despite this, the vehicle should handle non-perfect routes with more advanced controllers. Interestingly, the only route successful at 75 km/h was Route 1, which did not have any long stretches of straight road for the vehicle to pick up speed.
 
 \begin{figure}[h]
     \centering
@@ -409,7 +409,7 @@ The routes and completion rates reveals that the vehicle successfully completed 
     \label{fig:lamp_post}
 \end{figure}
 
-Another point to consider is the time spent in each route when the speed differs. Similar to Figure~\ref{fig:speed_performance}, Figure~\ref{fig:combined} shows the time spent within the speed threshold for each route reduces dramatically from 25 km/h to 50 km/h, with incremental gains on complete routes for speeds above 50 km/h. This further emphasizes that this PID controller is suitable for speeds up to 50 km/h.
+Another point to consider is the time spent on each route when the speed differs. Similar to Figure~\ref{fig:speed_performance}, Figure~\ref{fig:combined} shows the time spent within the speed threshold for each route reduces dramatically from 25 km/h to 50 km/h, with incremental gains on complete routes for speeds above 50 km/h given the nature of the simulation environment. This further emphasizes that this PID controller is suitable for speeds up to 50 km/h.
 
 \begin{figure}[h]
     \centering
@@ -428,7 +428,7 @@ The experimental results showed that the vehicle could complete all routes at lo
 
 The project also highlighted the importance of proper waypoint placement and the need for adaptive control strategies to handle non-perfect routes. The time spent within the speed threshold for each route reduced dramatically from 25 km/h to 50 km/h, emphasizing the PID controller's suitability for speeds up to 50 km/h.
 
-Future work may involve investigating advanced control strategies or adaptive PID tuning to improve performance in complex driving scenarios. Moreover, better lookahead function, incorporating turns of various angles, experimenting with different simulation environments, and integrating computer vision techniques could facilitate the development of a fully autonomous vehicle without the need for manual route planning.
+Future work may involve investigating advanced control strategies or adaptive PID tuning to improve performance in complex driving scenarios. Moreover, a better lookahead function, incorporating turns of various angles, experimenting with different simulation environments, and integrating computer vision techniques could facilitate the development of a fully autonomous vehicle without the need for manual route planning.
 
 \section{Acknowledgements}
 
