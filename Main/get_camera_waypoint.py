@@ -127,7 +127,11 @@ def main():
         
         collector = WaypointCollector()
         
-        print("Recording camera positions...")
+        print("\nPosition the camera as desired...")
+        print("Press Enter when ready to start recording camera positions...")
+        input()
+        
+        print("\nRecording camera positions...")
         print(f"- Fixed Z height: {FIXED_Z}m")
         print(f"- Minimum distance between points: {MIN_DISTANCE}m")
         print("Press Ctrl+C to stop and save...")
